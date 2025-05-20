@@ -1,0 +1,50 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.status-monitored {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.status-normal {
+    color: #28a745;
+}
+
+.activity-high {
+    background-color: #fff3f3;
+}
+
+.refresh-button {
+    float: right;
+    margin-top: -2px;
+}
+
+.table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+} 

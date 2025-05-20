@@ -1,24 +1,28 @@
 {
   "name": "hotel-website",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "main": "src/app/index.ts",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "ts-node src/app/index.ts",
+    "init-db": "ts-node src/app/init-db.ts",
+    "seed": "ts-node src/app/seed.ts",
+    "simulate-attack": "ts-node src/app/scripts/simulateAttack.ts",
+    "dev": "ts-node src/app/index.ts"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.2.1"
+    "@faker-js/faker": "^9.7.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
+    "bcrypt": "^5.1.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "reflect-metadata": "^0.1.13",
+    "sqlite3": "^5.1.6",
+    "typeorm": "^0.3.17"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4"
+    "@types/express": "^4.17.17",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.4"
   }
 }
