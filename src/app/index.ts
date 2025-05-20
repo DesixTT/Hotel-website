@@ -78,8 +78,16 @@ AppDataSource.initialize().then(async () => {
 
     // CRUD for Hotels
     app.post("/hotels", async (req: Request, res: Response) => {
+        // Ensure req.body is a single object, not an array
+        if (Array.isArray(req.body)) {
+            return res.status(400).json({ error: "Only one hotel can be created at a time." });
+        }
         const hotel = hotelRepo.create(req.body);
         const savedHotel = await hotelRepo.save(hotel);
+        if (Array.isArray(savedHotel)) {
+            return res.status(500).json({ error: "Unexpected array returned from save." });
+        }
+        const hotelObj = savedHotel as Hotel;
 
         // Log the action
         if (req.user) {
@@ -87,13 +95,13 @@ AppDataSource.initialize().then(async () => {
                 user: req.user,
                 action: ActionType.CREATE,
                 entityType: 'Hotel',
-                entityId: savedHotel.id,
+                entityId: hotelObj.id,
                 details: 'Hotel created'
             });
             await logRepo.save(log);
         }
 
-        res.json(savedHotel);
+        res.json(hotelObj);
     });
 
     app.get("/hotels", async (req: Request, res: Response) => {
