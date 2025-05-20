@@ -1,4 +1,4 @@
-import express, { Request } from "express";
+import express, { Request, Response } from "express";
 import { AppDataSource } from "./data-source";
 import { Hotel } from "./entities/Hotel";
 import { Booking } from "./entities/Booking";
@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth";
 import adminRoutes from "./routes/admin";
 import { MonitoringService } from "./services/MonitoringService";
 import path from "path";
+import { FindOptionsWhere } from "typeorm";
 
 // Extend Express Request type
 declare global {
@@ -23,7 +24,7 @@ const app = express();
 app.use(express.json());
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
     res.status(200).json({ status: 'healthy' });
 });
 
@@ -31,7 +32,7 @@ app.get('/health', (req, res) => {
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve admin dashboard
-app.get('/admin', (req, res) => {
+app.get('/admin', (req: Request, res: Response) => {
     res.sendFile(path.join(__dirname, 'public/admin/index.html'));
 });
 
@@ -76,7 +77,7 @@ AppDataSource.initialize().then(async () => {
     const logRepo = AppDataSource.getRepository(Log);
 
     // CRUD for Hotels
-    app.post("/hotels", async (req, res) => {
+    app.post("/hotels", async (req: Request, res: Response) => {
         const hotel = hotelRepo.create(req.body);
         const savedHotel = await hotelRepo.save(hotel);
 
@@ -86,7 +87,7 @@ AppDataSource.initialize().then(async () => {
                 user: req.user,
                 action: ActionType.CREATE,
                 entityType: 'Hotel',
-                entityId: (savedHotel as any).id,
+                entityId: savedHotel.id,
                 details: 'Hotel created'
             });
             await logRepo.save(log);
@@ -95,9 +96,14 @@ AppDataSource.initialize().then(async () => {
         res.json(savedHotel);
     });
 
-    app.get("/hotels", async (req, res) => {
+    app.get("/hotels", async (req: Request, res: Response) => {
         const { location, sortBy = "id", order = "ASC" } = req.query;
-        const where = location ? { location: String(location) } : {};
+        const where: FindOptionsWhere<Hotel> = {};
+        
+        if (location) {
+            where.location = String(location);
+        }
+        
         const hotels = await hotelRepo.find({
             where,
             order: { [String(sortBy)]: order === "DESC" ? "DESC" : "ASC" },
@@ -118,7 +124,7 @@ AppDataSource.initialize().then(async () => {
         res.json(hotels);
     });
 
-    app.get("/hotels/:id", async (req, res) => {
+    app.get("/hotels/:id", async (req: Request, res: Response) => {
         const hotel = await hotelRepo.findOne({
             where: { id: Number(req.params.id) },
             relations: ["bookings"],
@@ -126,27 +132,32 @@ AppDataSource.initialize().then(async () => {
         res.json(hotel);
     });
 
-    app.put("/hotels/:id", async (req, res) => {
+    app.put("/hotels/:id", async (req: Request, res: Response) => {
         await hotelRepo.update(req.params.id, req.body);
         const updated = await hotelRepo.findOneBy({ id: Number(req.params.id) });
         res.json(updated);
     });
 
-    app.delete("/hotels/:id", async (req, res) => {
+    app.delete("/hotels/:id", async (req: Request, res: Response) => {
         await hotelRepo.delete(req.params.id);
         res.json({ deleted: true });
     });
 
     // CRUD for Bookings
-    app.post("/bookings", async (req, res) => {
+    app.post("/bookings", async (req: Request, res: Response) => {
         const booking = bookingRepo.create(req.body);
         await bookingRepo.save(booking);
         res.json(booking);
     });
 
-    app.get("/bookings", async (req, res) => {
+    app.get("/bookings", async (req: Request, res: Response) => {
         const { guestName, sortBy = "id", order = "ASC" } = req.query;
-        const where = guestName ? { guestName: String(guestName) } : {};
+        const where: FindOptionsWhere<Booking> = {};
+        
+        if (guestName) {
+            where.guestName = String(guestName);
+        }
+        
         const bookings = await bookingRepo.find({
             where,
             order: { [String(sortBy)]: order === "DESC" ? "DESC" : "ASC" },
@@ -155,7 +166,7 @@ AppDataSource.initialize().then(async () => {
         res.json(bookings);
     });
 
-    app.get("/bookings/:id", async (req, res) => {
+    app.get("/bookings/:id", async (req: Request, res: Response) => {
         const booking = await bookingRepo.findOne({
             where: { id: Number(req.params.id) },
             relations: ["hotel"],
@@ -163,13 +174,13 @@ AppDataSource.initialize().then(async () => {
         res.json(booking);
     });
 
-    app.put("/bookings/:id", async (req, res) => {
+    app.put("/bookings/:id", async (req: Request, res: Response) => {
         await bookingRepo.update(req.params.id, req.body);
         const updated = await bookingRepo.findOneBy({ id: Number(req.params.id) });
         res.json(updated);
     });
 
-    app.delete("/bookings/:id", async (req, res) => {
+    app.delete("/bookings/:id", async (req: Request, res: Response) => {
         await bookingRepo.delete(req.params.id);
         res.json({ deleted: true });
     });

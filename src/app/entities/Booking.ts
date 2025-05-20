@@ -8,12 +8,18 @@ export class Booking {
   id!: number;
 
   @Column()
-  roomName!: string;
+  guestName!: string;
+
+  @Column()
+  checkIn!: Date;
+
+  @Column()
+  checkOut!: Date;
 
   @Index() // Add index for faster queries
-  @Column("decimal")
+  @Column("decimal", { precision: 10, scale: 2 })
   price!: number;
 
-  @ManyToOne(() => Hotel, (hotel) => hotel.bookings, { onDelete: "CASCADE" })
+  @ManyToOne(() => Hotel, hotel => hotel.bookings, { onDelete: "CASCADE" })
   hotel!: Hotel;
 }
