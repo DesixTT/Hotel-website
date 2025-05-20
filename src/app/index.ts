@@ -185,7 +185,9 @@ AppDataSource.initialize().then(async () => {
         res.json({ deleted: true });
     });
 
-    app.listen(3002, () => {
-        console.log("Server running on http://localhost:3002");
+    // Start the server
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+        console.log(`Server running on http://localhost:${port}`);
     });
 }); 
